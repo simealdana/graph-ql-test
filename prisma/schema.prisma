@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Make {
+  id           Int               @id @map("make_id")
+  name         String            @map("make_name")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+  vehicleTypes MakeVehicleType[]
+
+  @@index([name])
+  @@map("makes")
+}
+
+model VehicleType {
+  id    Int               @id @map("type_id")
+  name  String            @map("type_name")
+  makes MakeVehicleType[]
+
+  @@map("vehicle_types")
+}
+
+model MakeVehicleType {
+  makeId        Int         @map("make_id")
+  vehicleTypeId Int         @map("vehicle_type_id")
+  make          Make        @relation(fields: [makeId], references: [id], onDelete: Cascade)
+  vehicleType   VehicleType @relation(fields: [vehicleTypeId], references: [id], onDelete: Cascade)
+
+  @@id([makeId, vehicleTypeId])
+  @@map("make_vehicle_types")
+}
