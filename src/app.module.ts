@@ -34,7 +34,7 @@ import { IngestionScheduler } from './presentation/scheduler/ingestion.scheduler
         autoSchemaFile: config.env === 'production' ? true : join(process.cwd(), 'schema.gql'),
         sortSchema: true,
         playground: false,
-        graphiql: config.env !== 'production',
+        graphiql: true,
         introspection: true,
       }),
     }),
