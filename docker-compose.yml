@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vehicle
+      POSTGRES_PASSWORD: vehicle
+      POSTGRES_DB: vehicle_data
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U vehicle -d vehicle_data']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      LOG_LEVEL: info
+      DATABASE_URL: postgresql://vehicle:vehicle@postgres:5432/vehicle_data?schema=public
+      NHTSA_API_BASE_URL: https://vpic.nhtsa.dot.gov/api
+      INGESTION_CONCURRENCY: 10
+      INGESTION_MAKE_LIMIT: ${INGESTION_MAKE_LIMIT:-0}
+      INGESTION_CRON_ENABLED: 'false'
+    ports:
+      - '${APP_PORT:-3000}:3000'
+
+volumes:
+  postgres_data:
