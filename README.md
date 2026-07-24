@@ -185,7 +185,7 @@ All configuration comes from environment variables, every one has a sensible def
 
 ## GraphQL API
 
-The schema is generated code first and written to [`schema.gql`](schema.gql). GraphiQL is enabled at `/graphql` outside production.
+The schema is generated code first and written to [`schema.gql`](schema.gql). An interactive GraphiQL IDE is available at `/graphql`.
 
 ### Queries
 
