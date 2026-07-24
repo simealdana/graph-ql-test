@@ -1,0 +1,85 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+"""A make that failed during ingestion and the reason"""
+type IngestionFailureModel {
+  makeId: Int!
+  makeName: String!
+  reason: String!
+}
+
+"""Summary of an ingestion run"""
+type IngestionResultModel {
+  """Total ingestion duration in milliseconds"""
+  durationMs: Int!
+  failures: [IngestionFailureModel!]!
+  makesFailed: Int!
+
+  """Makes actually processed (after INGESTION_MAKE_LIMIT)"""
+  makesProcessed: Int!
+  makesSucceeded: Int!
+
+  """Total makes returned by the NHTSA API"""
+  totalMakesDiscovered: Int!
+
+  """Total make-to-vehicle-type links persisted"""
+  vehicleTypesLinked: Int!
+}
+
+"""A vehicle make with its associated vehicle types"""
+type MakeModel {
+  """NHTSA make identifier"""
+  makeId: Int!
+
+  """Human-readable make name"""
+  makeName: String!
+
+  """Vehicle types produced by this make"""
+  vehicleTypes: [VehicleTypeModel!]!
+}
+
+type Mutation {
+  """
+  Fetches all makes and their vehicle types from the NHTSA API, transforms the XML to JSON and persists the result. Idempotent: re-running updates existing records.
+  """
+  triggerIngestion: IngestionResultModel!
+}
+
+"""Paginated list of makes"""
+type PaginatedMakesModel {
+  items: [MakeModel!]!
+  limit: Int!
+  offset: Int!
+
+  """Total number of makes matching the filter"""
+  total: Int!
+}
+
+type Query {
+  """Fetch a single make by its NHTSA make ID"""
+  make(makeId: Int!): MakeModel
+
+  """
+  List ingested vehicle makes with their vehicle types (paginated, searchable)
+  """
+  makes(
+    """Max items to return (1-200)"""
+    limit: Int! = 50
+
+    """Items to skip"""
+    offset: Int! = 0
+
+    """Case-insensitive filter on make name"""
+    search: String
+  ): PaginatedMakesModel!
+}
+
+"""A vehicle type (e.g. Passenger Car, Truck) associated with a make"""
+type VehicleTypeModel {
+  """NHTSA vehicle type identifier"""
+  typeId: Int!
+
+  """Human-readable vehicle type name"""
+  typeName: String!
+}
